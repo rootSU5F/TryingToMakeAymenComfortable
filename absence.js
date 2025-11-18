@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         Mark All Students Absent (AJAX Safe)
+// @name         Auto Mark All Absent (No Button)
 // @namespace    SaeedScript
-// @version      1.2
-// @description  Automatically check all absence checkboxes even when loaded by AJAX
+// @version      1.3
+// @description  Automatically mark all absence checkboxes, even with AJAX
 // @match        *://*/*
 // @grant        none
 // ==/UserScript==
@@ -16,42 +16,24 @@
 
         boxes.forEach(box => {
             if (!box.checked) {
-                box.click();
+                box.click(); // triggers studentAbsence(this, id)
                 count++;
             }
         });
 
-        alert(`Done! Marked ${count} students absent.`);
+        if (count > 0) {
+            console.log(`Auto-Absence: Marked ${count} students absent.`);
+        }
     }
 
-    // Add floating button
-    function addButton() {
-        if (document.getElementById("absentBtnSaeed")) return;
+    // Run once when page loads
+    setTimeout(markAllAbsent, 800);
 
-        const btn = document.createElement("button");
-        btn.id = "absentBtnSaeed";
-        btn.textContent = "Mark All Absent";
-        btn.style.position = "fixed";
-        btn.style.top = "20px";
-        btn.style.right = "20px";
-        btn.style.zIndex = "999999";
-        btn.style.padding = "10px 15px";
-        btn.style.background = "#d9534f";
-        btn.style.color = "white";
-        btn.style.border = "none";
-        btn.style.borderRadius = "5px";
-        btn.style.cursor = "pointer";
-
-        btn.onclick = markAllAbsent;
-        document.body.appendChild(btn);
-    }
-
-    addButton();
-
-    // 🔥 Watch for AJAX / dynamic content
+    // Watch for AJAX content changes
     const observer = new MutationObserver(() => {
-        addButton(); // ensure the button always exists
+        markAllAbsent();
     });
 
     observer.observe(document.body, { childList: true, subtree: true });
+
 })();
